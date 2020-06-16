@@ -1,5 +1,6 @@
 package com.csl.shop
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
@@ -24,7 +25,18 @@ class SignUpActivity : AppCompatActivity() {
                     if (it.isSuccessful) {
                         AlertDialog.Builder(this)
                             .setTitle("Sign up")
-                            .setMessage("")
+                            .setMessage("Account Created")
+                            .setPositiveButton("OK") { dialog, which ->
+                                setResult(Activity.RESULT_OK)
+                                finish()
+                            }.show()
+                    }
+                    else {
+                      AlertDialog.Builder(this)
+                          .setTitle("Sign Up")
+                          .setMessage(it.exception?.message)
+                          .setPositiveButton("OK", null)
+                          .show()
                     }
                 }
         }

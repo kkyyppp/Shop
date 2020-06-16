@@ -1,5 +1,6 @@
 package com.csl.shop
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -11,6 +12,7 @@ import android.view.MenuItem
 class MainActivity : AppCompatActivity() {
 
     private val RC_SIGNUP =  200
+    private val RC_NICKNAME = 210
     var signup = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +52,13 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGNUP) {
+            if (resultCode == Activity.RESULT_OK) {
+                val intent = Intent(this, NicknameActivity::class.java)
+                startActivityForResult(intent, RC_NICKNAME)
+
+            }
+        }
+        else if (requestCode == RC_NICKNAME) {
 
         }
     }
