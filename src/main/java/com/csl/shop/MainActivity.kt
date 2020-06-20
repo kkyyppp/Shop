@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity() {
     val funtions = listOf<String>(
         "Camera",
         "Contacts",
-        "Download coupons",
-        "News",
+        "Parking",
+        "Movies",
         "Maps",
     "A",
     "b",
@@ -111,6 +111,8 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "functionClicked: $position")
             when(position) {
                 1 -> startActivity(Intent(holder.itemView.context, ContactActivity::class.java))
+                2 ->  startActivity(Intent(holder.itemView.context, ParkingActivity::class.java))
+                3 ->  startActivity(Intent(holder.itemView.context, MovieActivity::class.java))
             }
 
 
@@ -154,6 +156,8 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, NicknameActivity::class.java)
                 startActivityForResult(intent, RC_NICKNAME)
             }
+            else
+                finish()
         }
         else if (requestCode == RC_NICKNAME) {
 
