@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
         "Contacts",
         "Parking",
         "Movies",
-        "Maps",
-    "A",
+        "Bus",
+    "Maps",
     "b",
     "C",
     "d",
@@ -113,6 +113,7 @@ class MainActivity : AppCompatActivity() {
                 1 -> startActivity(Intent(holder.itemView.context, ContactActivity::class.java))
                 2 ->  startActivity(Intent(holder.itemView.context, ParkingActivity::class.java))
                 3 ->  startActivity(Intent(holder.itemView.context, MovieActivity::class.java))
+                4 ->  startActivity(Intent(holder.itemView.context, BusActivity::class.java))
             }
 
 
