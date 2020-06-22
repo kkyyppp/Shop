@@ -18,25 +18,38 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.info
 import org.jetbrains.anko.uiThread
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
 import java.net.URL
 
 class MovieActivity : AppCompatActivity(), AnkoLogger {
 
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://gist.githubusercontent.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie)
 
         doAsync {
-            val url =
-                URL("https://gist.githubusercontent.com/saniyusuf/406b843afdfb9c6a86e25753fe2761f4/raw/523c324c7fcc36efab8224f9ebb7556c09b69a14/Film.JSON")
-            val json = url.readText()
-
+//            val url =
+//                URL("https://gist.githubusercontent.com/saniyusuf/406b843afdfb9c6a86e25753fe2761f4/raw/523c324c7fcc36efab8224f9ebb7556c09b69a14/Film.JSON")
+//            val json = url.readText()
 
             //val movies = Gson().fromJson<List<MovieItem>>(json, object : TypeToken<List<MovieItem>>(){}.type)
-            val movies = Gson().fromJson<Movie>(json, Movie::class.java)
+            //val movies = Gson().fromJson<Movie>(json, Movie::class.java)
 
-            movies.forEach {
+            val movieService = retrofit.create(MovieService::class.java)
+            val movies = movieService.listMovies()
+                                    .execute()
+                                    .body()
+
+
+            movies?.forEach {
                 info("${it.Title}  ${it.imdbRating}")
             }
 
@@ -45,7 +58,9 @@ class MovieActivity : AppCompatActivity(), AnkoLogger {
                 recycler.layoutManager = LinearLayoutManager(this@MovieActivity)
                 recycler.setHasFixedSize(true)
                 recycler.adapter = MovieAdapter()
-                (recycler.adapter as MovieAdapter).setData(movies)
+                if (movies != null) {
+                    (recycler.adapter as MovieAdapter).setData(movies)
+                }
             }
         }
     }
@@ -120,4 +135,9 @@ data class MovieItem(
     val imdbVotes: String,
     val totalSeasons: String
 )
+
+interface  MovieService {
+    @GET("saniyusuf/406b843afdfb9c6a86e25753fe2761f4/raw/523c324c7fcc36efab8224f9ebb7556c09b69a14/Film.JSON")
+    fun listMovies() : Call<Movie>
+}
 
