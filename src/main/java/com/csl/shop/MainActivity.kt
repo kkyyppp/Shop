@@ -1,7 +1,10 @@
 package com.csl.shop
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -18,14 +21,18 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.row_function.view.*
+import org.jetbrains.anko.*
+import java.net.URL
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private val TAG = MainActivity::class.java.simpleName
     private val RC_SIGNUP =  200
     private val RC_NICKNAME = 210
+    var cacheService: Intent? = null
     var signup = false
     val auth = FirebaseAuth.getInstance()
     val funtions = listOf<String>(
@@ -34,14 +41,22 @@ class MainActivity : AppCompatActivity() {
         "Parking",
         "Movies",
         "Bus",
-    "Maps",
-    "b",
+        "News",
+    "Map",
     "C",
     "d",
     "E",
     "f",
     "G",
     "h")
+
+    val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action.equals(CacheService.ACTION_CACHE_DONE))
+                info("MainActivity cache informed")
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +129,8 @@ class MainActivity : AppCompatActivity() {
                 2 ->  startActivity(Intent(holder.itemView.context, ParkingActivity::class.java))
                 3 ->  startActivity(Intent(holder.itemView.context, MovieActivity::class.java))
                 4 ->  startActivity(Intent(holder.itemView.context, BusActivity::class.java))
+                5 ->  startActivity(Intent(holder.itemView.context, NewsActivity::class.java))
+                6 ->  startActivity(Intent(holder.itemView.context, MapsActivity::class.java))
             }
 
 
@@ -145,6 +162,34 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
+            R.id.action_cache -> {
+
+//                cacheService = Intent(this, CacheService::class.java)
+//                startService(cacheService)
+
+                doAsync {
+                    //方法一
+                    val json =
+                        URL("https://gist.githubusercontent.com/saniyusuf/406b843afdfb9c6a86e25753fe2761f4/raw/523c324c7fcc36efab8224f9ebb7556c09b69a14/Film.JSON").readText()
+                    val movies = Gson().fromJson<Movie>(json, Movie::class.java)
+//                val intent = Intent(this, CacheService::class.java)
+//                intent.putExtra("TITLE", movies[0].Title)
+//                intent.putExtra("URL", movies[0].Poster)
+//                startService(intent)
+
+                    //使用ANKO
+                    movies.forEach {
+                        startService(
+                            intentFor<CacheService>(
+                                "TITLE" to it.Title,
+                                "URL" to it.Poster
+                            )
+                        )
+                    }
+                }
+
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -186,5 +231,19 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val filter = IntentFilter(CacheService.ACTION_CACHE_DONE)
+        registerReceiver(broadcastReceiver, filter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+//        stopService(cacheService)
+        unregisterReceiver(broadcastReceiver)
     }
 }

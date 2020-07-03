@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "111375361336-4mh22sk8dhma7ii3ffqkkikd3v8m939j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.csl.shop",
+            "certificate_hash": "79ecf9c719801e60673be7be9cf12a54d490f519"
+          }
+        },
+        {
           "client_id": "111375361336-krisr0pkdhpmr8r28btm9jhdggvbb9lq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
